@@ -1,66 +1,76 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!doctype html>
+<html><head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes ">
-    <meta name="description" content="CTF Platform">
-    <title>CTF Platform</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="description" content="ACTF Platform">
+    <title>ACTF|登录</title>
     <link href="css/jquery.ambiance.css" rel="stylesheet" media="screen">
     <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
     <link href="css/main.css" rel="stylesheet" media="screen">
-    <link href="css/registration.css" rel="stylesheet" media="screen">
-    <link href="compete/lib/dark-hive/jquery-ui-1.10.2.custom.css" rel="stylesheet" media="screen">
+
+    <!-- IE8 support -->
+    <script src="js/css3-mediaqueries.js"></script>
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script type='text/javascript' src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+      <script type='text/javascript' src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.js"></script>
+    <![endif]-->
 </head>
 <body>
-<div class="navbar">
-    <div class="navbar-inner">
-        <a class="brand" href="/">CTF Platform</a>
-        <ul id="navbar" class="nav">
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+      <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        <a class="navbar-brand" href="/">安恒杯浙江大学第一届信息安全技术挑战赛</a>
+      </div>
+      <div class="collapse navbar-collapse" id="navbar-collapse">
+        <ul id="navbar" class="nav navbar-nav navbar-right">
         </ul>
+      </div>
     </div>
 </div>
-<div class="container-narrow">
-    <div class="contentbox row-fluid">
-        <div class="row-fluid registration">
-            <div class="offset1 span10">
-                <div id="login_msg"></div>
-                <form class="form-horizontal" action="" onsubmit="return false;">
-                    <div class="control-group">
-                        <label class="control-label registration-label" for="reg-team">Team Name</label>
-
-                        <div class="controls registration-controls">
-                            <input name="teamname" id="reg-team" placeholder="Team Name" type="text">
-                        </div>
-                    </div>
-
-                    <div class="control-group">
-                        <label class="control-label registration-label" for="reg-pass">Password</label>
-
-                        <div class="controls registration-controls">
-                            <input name="password" id="reg-pass" placeholder="Password" type="password">
-                        </div>
-                    </div>
-
-                    <div class="control-group">
-                        <div class="controls registration-controls">
-                            <button id="login-button" type="submit" onclick="handle_login();"
-                                    class="btn btn-primary">
-                                Login
-                            </button>
-                            <button id="forgot-button" onclick="handle_forgot_password_submit();"
-                                    class="btn btn-primary">
-                                Forgot Password
-                            </button>
-                        </div>
-                    </div>
-                </form>
-                <div id="forgot_teamname_link"><a href="teamnamelookup">I forgot my team name.</a></div>
+<div class="container">
+    <div class="contentbox row">
+        <div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
+            <div class="row">
+              <h3>登录</h3>
             </div>
+            <div id="login_msg"></div>
+            <form class="form-horizontal" action="" onsubmit="return false;">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label" for="reg-team">用户名</label>
+                    <div class="col-sm-9">
+                        <input name="teamname" id="reg-team" placeholder="用户名" type="text" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label" for="reg-pass">密码</label>
+                    <div class="col-sm-9">
+                        <input name="password" id="reg-pass" placeholder="密码" type="password" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-3 col-sm-9">
+                        <button id="login-button" type="submit" onclick="handle_login();" class="btn btn-primary">
+                            登录
+                        </button>
+                        <button id="forgot-button" onclick="handle_forgot_password_submit();" class="btn btn-primary">
+                            忘记密码
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
     <div id="footer"></div>
 </div>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery.ambiance.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/dependencies.js"></script>
 <script src="js/login.js"></script>
@@ -70,5 +80,14 @@
         load_footer();
     })
 </script>
-</body>
-</html>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-20075001-9', 'zjuisa.org');
+  ga('send', 'pageview');
+
+</script>
+</body></html>

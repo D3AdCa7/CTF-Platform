@@ -1,15 +1,62 @@
 /* Scoreboard */
-
-.table th {
-	border-top: inherit;
+#scoreboard-table {
+  max-width: 1170px;
+  width: auto;
+  margin: 0 auto;
 }
 
-.nav-tabs {
-	border: inherit;
-	margin-bottom: 0px;
+#scoreboard-table th, #scoreboard-table td {
+  text-align: center;
+  font-size: 18px;
 }
 
-.nav-tabs li {
-	border: solid #e2e7e7;
-	border-width: 0 0 2px 0;
+#scoreboard-table .user-name {
+  max-width: 300px;
+}
+
+#scoreboard-table .progress {
+  max-width: 600px;
+}
+
+ul.scoreboard-progress {
+  list-style: none;
+  margin: 0;
+  line-height: 1.5em;
+  padding: 0;
+}
+
+ul.scoreboard-progress li {
+  display: inline;
+  margin-left: 0.1em;
+  line-height: 1.5em;
+}
+
+ul.scoreboard-progress li a {
+  display: inline-block;
+  width: 1em; height: 1em;
+  color: rgba(0, 0, 0, 0);
+  -webkit-border-radius: 0.5em; -moz-border-radius: 0.5em;
+  line-height: 1.5em;
+  text-decoration: none;
+  vertical-align: middle;
+}
+
+ul.scoreboard-progress li a.unsolved {
+  background-color: #d9534f;
+  border-color: #d43f3a;
+}
+
+ul.scoreboard-progress li a.unsolved:hover {
+  background-color: #d43f3a;
+  border-color: #d43f3a;
+}
+
+ul.scoreboard-progress li a.solved {
+  background-color: #47a447;
+  border-color: #398439;
+}
+
+ul.scoreboard-progress li a.solved:hover {
+  background-color: #398439;
+  border-color: #398439;
 }

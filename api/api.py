@@ -1,3 +1,6 @@
+#
+# -*- coding: utf-8 -*-
+
 __author__ = ["Collin Petty", "Peter Chapman"]
 __copyright__ = "Carnegie Mellon University"
 __license__ = "MIT"
@@ -8,8 +11,11 @@ __status__ = "Production"
 
 
 import logging
-from flask import Flask, request, session, abort
+from flask import Flask, request, session, abort, redirect
 from functools import wraps
+import json
+import random
+from datetime import datetime
 
 import account
 import auth
@@ -43,11 +49,10 @@ def deny_blacklisted(f):
 
 
 def return_json(f):
-    import json
-
     @wraps(f)
     def wrapper(*args, **kwds):
-        return json.dumps(f(*args, **kwds))
+        return json.dumps(f(*args, **kwds), encoding='utf8', 
+            separators=(',', ':'))
     return wrapper
 
 
@@ -61,6 +66,7 @@ def setup_logging():
 @app.route('/api/login', methods=['POST'])
 @return_json
 def login_hook():
+    session['_rd'] = random.getrandbits(32)
     return auth.login(request, session)
 
 
@@ -92,10 +98,11 @@ def update_password_hook():
 @app.route('/api/problems', methods=['GET'])
 @require_login
 @return_json
-def load_unlocked_problems_hook():
-    return problem.load_unlocked_problems(session['tid'])
+def load_problems_hook():
+    return problem.load_problems_tid(session['tid'])
 
 
+"""
 @app.route('/api/problems/solved', methods=['GET'])
 @require_login
 @return_json
@@ -111,6 +118,7 @@ def get_single_problem_hook(pid):
     if 'status' not in problem_info:
         problem_info.update({"status": 1})
     return problem_info
+"""
 
 
 @app.route('/api/requestpasswordreset', methods=['POST'])
@@ -125,24 +133,33 @@ def reset_password_hook():
     return utilities.reset_password(request)
 
 
+@app.route('/api/verify', methods=['GET'])
+def verify_hook():
+    ret = utilities.verify_email(request, session)
+    if ret['status'] == 1:
+        return redirect('http://%s/account' %utilities.site_domain)
+    return json.dumps(ret)
+
+
+"""
 @app.route('/api/lookupteamname', methods=['POST'])
 @return_json
 def lookup_team_names_hook():
-    return utilities.lookup_team_names(request.form.get('email', ''))
+    return utilities.lookup_team_names(request.form.get('email', '').encode('utf8'))
 
 
 @app.route('/api/creategroup', methods=['POST'])
 @require_login
 @return_json
 def create_group_hook():
-    return group.create_group(session['tid'], request.form.get('name', ''))
+    return group.create_group(session['tid'], request.form.get('name', '').encode('utf8'))
 
 
 @app.route('/api/joingroup', methods=['POST'])
 @require_login
 @return_json
 def join_group_hook():
-    gname = request.form.get('name', '')
+    gname = request.form.get('name', '').encode('utf8')
     return group.join_group(session['tid'], gname)
 
 
@@ -157,7 +174,7 @@ def get_group_membership_hook():
 @require_login
 @return_json
 def leave_group_hook():
-    gid = request.form.get('gid', '')
+    gid = request.form.get('gid', '').encode('utf8')
     return group.leave_group(session['tid'], gid)
 
 
@@ -166,24 +183,26 @@ def leave_group_hook():
 @return_json
 def load_team_score_hook():
     return {'score': scoreboard.load_team_score(session['tid'])}
+"""
 
 
 @app.route('/api/scoreboards', methods=['GET'])
 @return_json
 def get_scoreboards_hook():
-    """Loads the public scoreboard if the user is not logged in
-    otherwise retrieves the group scoreboards as well"""
-    scoreboards = [scoreboard.get_public_scoreboard()]
-    if 'tid' in session:
-        scoreboards += scoreboard.get_group_scoreboards(session['tid'])
-    return scoreboards
+    return scoreboard.get_scoreboard(session)
 
 
 @app.route('/api/submit', methods=['POST'])
 @return_json
 @require_login
 def submit_problem_hook():
-    return problem.submit_problem(session['tid'], request)
+    ret = problem.submit_problem(session['tid'], request, session['is_zju_user'])
+    tstamp = utilities.timestamp(datetime.utcnow())
+    if tstamp > scoreboard.ctf_end:
+        ret['message'] = '[比赛已经结束] %s' % ret['message']
+        ret['status'] = 0
+        ret['sore'] = 0
+    return ret
 
 
 @app.route('/api/news', methods=['GET'])
@@ -192,11 +211,13 @@ def load_news_hook():
     return utilities.load_news()
 
 
+"""
 @app.route('/api/getsshacct', methods=['GET'])
 @return_json
 @require_login
 def get_ssh_account_hook():
     return account.get_ssh_account(session['tid'])
+"""
 
 
 @app.after_request
@@ -234,6 +255,7 @@ def initialize():
     app.config['SESSION_COOKIE_DOMAIN'] = config.get('flask', 'SESSION_COOKIE_DOMAIN')
     app.config['SESSION_COOKIE_PATH'] = config.get('flask', 'SESSION_COOKIE_PATH')
     app.config['SESSION_COOKIE_NAME'] = config.get('flask', 'SESSION_COOKIE_NAME')
+    app.config['PERMANENT_SESSION_LIFETIME'] = int(config.get('flask','PERMANENT_SESSION_LIFETIME'))
 
     enable_email = config.get('email', 'enable_email')
     if enable_email:
@@ -259,13 +281,17 @@ def initialize():
     common.log("Setting sender name to '%s'" % from_name, 'INFO')
     utilities.from_name = from_name
 
+    site_domain = config.get('misc', 'site_domain').encode('utf8')
+    assert(site_domain)
+    utilities.site_domain = site_domain
+
     problem.root_web_path = config.get('autogen', 'root_web_path')
     problem.relative_auto_prob_path = config.get('autogen', 'relative_auto_prob_path')
     common.log_level = ['ERROR']
 
 
 initialize()  # load all config settings and configure flask keys
-problem.load_autogenerators()  # load all auto-generated problems
+#problem.load_autogenerators()  # load all auto-generated problems
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000)
+    app.run(host="0.0.0.0", port=8000, threaded=True, debug=False)

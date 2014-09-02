@@ -1,18 +1,8 @@
-/* Site Theme */
+/* Global style */
 
-/** Containers **/
-
-.container-narrow {
-    max-width: 800px;
-    margin: 0 auto 30px;
-    padding-bottom: 5px;
-}
-
-.contentbox {
-    font-family: 'Gill Sans', 'Gill Sans MT', sans-serif;
-    padding-top: 15px;
-    padding-bottom: 30px;
-    margin-bottom: 30px;
+body {
+  padding-top: 96px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 /** Elements **/
@@ -22,6 +12,12 @@ h3, h2, h1 {
     border-style: none none solid none;
     border-color: white;
     border-width: 1px;
+}
+
+p, li {
+  font-size: 18px;
+  line-height: 1.72222;
+  margin: 0 0 15px;
 }
 
 a:hover {
@@ -50,49 +46,12 @@ hr {
 
 /* Navigation Bar */
 
-
-.navbar-inner {
-    max-width: 1250px;
-
-    padding: 5px 0px 5px 0px;
-
-    margin: 0 auto;
-
-    filter: none;
+.navbar-brand, .navbar-default .navbar-nav>li {
+  margin: 0;
 }
 
-.navbar .nav {
-    float: right;
-}
-
-.navbar .brand {
-    font-family: 'Gill Sans', 'Gill Sans MT', sans-serif;
-    font-size: 2.5em;
-    font-weight: inherit;
-    text-shadow: inherit;
-
-    margin-right: 20px;
-}
-
-.navbar .nav li, .navbar .nav li a {
-    text-transform: uppercase;
-    font-family: 'Gill Sans', 'Gill Sans MT', sans-serif;
-    font-size: 1em;
-    text-shadow: inherit;
-}
-
-.navbar .nav li a:hover, .navbar .nav .active a:hover {
-    color: white;
-    background-color: inherit;
-    box-shadow: inherit;
-    cursor: pointer;
-}
-
-.navbar .nav .active a {
-    color: white;
-    background-color: inherit;
-    box-shadow: inherit;
-    text-decoration: underline;
+.navbar-default .navbar-nav>li>a:hover {
+  background-color: #EEE;
 }
 
 /* Footer */
@@ -105,26 +64,3 @@ hr {
     margin-top: 3em;
 }
 
-
-.widgetbox .row-fluid .span4, .widgetbox .row-fluid .span6 {
-    /** This is an ugly way of overriding Bootstrap's row spacing. **/
-    padding: 0px 15px 0px 15px;
-}
-
-.sponsor-rollcall {
-    color: white;
-    text-align: center;
-}
-
-.widgetbox h5 {
-    /** Column header **/
-    text-transform: uppercase;
-}
-
-.widgetbox img.logo {
-    height: 140px;
-}
-
-.twitter-embed {
-    text-align: center;
-}

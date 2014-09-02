@@ -18,12 +18,12 @@ def get_group_membership(tid):
     groups = list()
     owners = set()
     for g in list(db.groups.find({'owners': tid}, {'name': 1, 'gid': 1})):
-        groups.append({'name': str(g['name']),
+        groups.append({'name': g['name'],
                        'gid': g['gid'],
                        'owner': True})
         owners.add(g['gid'])
     groups += filter(lambda g: g['gid'] not in owners,
-                     ({'name': str(g['name']),
+                     ({'name': g['name'],
                        'gid': g['gid'],
                        'owner': False} for g in list(db.groups.find({'members': tid}, {'name': 1, 'gid': 1}))))
     return groups

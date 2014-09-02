@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+		<meta name="description" content="ACTF Platform">
+    <title>ACTF|规则</title>
+		<link href="css/jquery.ambiance.css" rel="stylesheet" media="screen">
+		<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+		<link href="css/main.css" rel="stylesheet" media="screen">
+
+    <!-- IE8 support -->
+    <script src="js/css3-mediaqueries.js"></script>
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script type='text/javascript' src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+      <script type='text/javascript' src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.js"></script>
+    <![endif]-->
+	</head>
+	<body>
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+      <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        <a class="navbar-brand" href="/">安恒杯浙江大学第一届信息安全技术挑战赛</a>
+      </div>
+      <div class="collapse navbar-collapse" id="navbar-collapse">
+        <ul id="navbar" class="nav navbar-nav navbar-right">
+        </ul>
+      </div>
+    </div>
+</div>
+		<div class="container">
+			<div class="contentbox row-fluid">
+				<div class="offset1 span10 offset1">
+					<h3>比赛规则</h3>
+					<ol>
+            <li>什么是CTF<br>
+            参考<a href="https://ctftime.org/ctf-wtf">https://ctftime.org/ctf-wtf</a>/</li>
+            <li>ACTF注册与参赛地址<a href="http://ctf.zjuisa.org/">http://ctf.zjuisa.org/</a>。<br>
+            比赛时间为北京时间2014年4月5日8点至2014年4月6日24点。</li>
+            <li>ACTF采用解题模式Jeopardy-style，赛题分为以下五个大类：Web、Exploit、Reverse、Crypto、Misc&amp;Mobile，分别包含如下内容：
+            <ul>
+              <li>Web       网站攻防</li>
+              <li>Exploit     漏洞发掘与利用</li>
+              <li>Reverse     逆向工程</li>
+              <li>Crypto      密码学原理及其应用</li>
+              <li>Misc&amp;Mobile   隐写术、取证分析、无线安全等</li>
+            </ul>
+                每一大类包含3-5题，分值为100-500，难度随分值递增。</li>
+            <li>参赛者以个人为单位注册参赛，目标是根据任务提示找到答案（Capture The Flag）。大部分Flag的格式为：ACTF{可见字符串}；如果Flag为其他格式，题目中会单独说明。Flag关于大小写敏感。提交正确Flag即可得到相应分数。</li>
+            <li>赛题根据参赛者解题进度依次开放，根据赛题解答情况，主办方可能会提供解答提示。仅限于通过人数极少的题目。</li>
+            <li>赛事相关信息会同步通过竞赛官网公告以及人人、微博等社交平台发布。</li>
+            <li>禁止一个人注册多个账号，违者取消此次ACTF资格。</li>
+            <li>用户名与所在单位等注册信息中，请勿出现暴力、色情、政治等相关表述，如发现将删除账号。</li>
+            <li>成功攻击比赛平台的选手将得到额外加分，但不得干扰比赛秩序，违者取消此次ACTF资格。</li>
+            <li>关于比赛规则的最终解释权归大赛组委会所有。</li>
+          </ol>
+          <p class="alert alert-info">如果您对规则有疑问，请向actf.zju@gmail.com发邮件询问。</p>
+				</div>
+			</div>
+			<div id="footer"></div>
+		</div>
+		<script src="js/jquery.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/dependencies.js"></script>
+		<script>
+			$(function() {
+				display_navbar();
+				load_footer();
+			})
+		</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-20075001-9', 'zjuisa.org');
+  ga('send', 'pageview');
+
+</script>
+	</body>
+</html>

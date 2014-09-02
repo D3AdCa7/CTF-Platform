@@ -1,0 +1,43 @@
+.solved {
+    color: green;
+}
+
+.unsolved {
+    color: red;
+}
+
+.category-label {
+  display: inline-block;
+  width: 81px;
+}
+
+.flag-panel {
+  margin: 0 auto;
+  width: 300px;
+}
+
+.flag-form {
+  width: 300px;
+}
+
+.problem-title {
+  display: block;
+  font-size: 18px;
+  line-height: 1.25em;
+}
+
+.flag-input {
+  margin: 1em auto;
+}
+
+.flag-panel > div > .alert {
+  margin: 1em auto;
+}
+
+#recaptcha_challenge_image {
+  margin: 1em auto;
+}
+
+#recaptcha_response_field {
+  margin: 1em auto;
+}

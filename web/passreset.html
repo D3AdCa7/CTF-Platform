@@ -1,56 +1,68 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!doctype html>
+<html><head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes ">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <meta name="description" content="CTF Platform">
-    <title>CTF Platform</title>
-    <link href='//fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'>
+    <title>ACTF|重置密码</title>
+    <link href="//fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet" type="text/css">
     <link href="css/jquery.ambiance.css" rel="stylesheet" media="screen">
     <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
     <link href="css/main.css" rel="stylesheet" media="screen">
-    <link href="css/registration.css" rel="stylesheet" media="screen">
-    <link href="compete/lib/dark-hive/jquery-ui-1.10.2.custom.css" rel="stylesheet" media="screen">
+
+    <!-- IE8 support -->
+    <script src="js/css3-mediaqueries.js"></script>
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script type='text/javascript' src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+      <script type='text/javascript' src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.js"></script>
+    <![endif]-->
 </head>
 <body>
-<div class="navbar">
-    <div class="navbar-inner">
-        <a class="brand" href="/">CTF Platform</a>
-        <ul id="navbar" class="nav">
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+      <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        <a class="navbar-brand" href="/">安恒杯浙江大学第一届信息安全技术挑战赛</a>
+      </div>
+      <div class="collapse navbar-collapse" id="navbar-collapse">
+        <ul id="navbar" class="nav navbar-nav navbar-right">
         </ul>
+      </div>
     </div>
 </div>
-<div class="container-narrow">
-    <div class="contentbox row-fluid">
-        <div class="row-fluid">
-            <div class="offset1 span10">
-                <h3>Password Reset</h3>
+<div class="container">
+    <div class="contentbox row">
+        <div class="col-lg-offset-1 col-sm-10 col-md-10">
+            <h3>重置密码</h3>
 
-                <div id="pass_reset_msg"></div>
-                <form class="form-horizontal" onsubmit="return false;">
-                    <div class="control-group">
-                        <label class="control-label registration-label" for="new-pass">New Password</label>
+            <div id="pass_reset_msg"></div>
+            <form class="form-horizontal" onsubmit="return false;">
+                <div class="form-group">
+                    <label class="control-label registration-label" for="new-pass">新密码</label>
 
-                        <div class="controls registration-controls">
-                            <input id="new-pass" placeholder="Password" type="password">
-                        </div>
+                    <div class="controls registration-controls">
+                        <input id="new-pass" placeholder="**********" type="password" class="form-control">
                     </div>
-                    <div class="control-group">
-                        <div class="controls registration-controls">
-                            <button id="submit-button" type="submit" class="btn btn-primary"
-                                    onclick="handle_new_password_submit();">
-                                Submit
-                            </button>
-                        </div>
+                </div>
+                <div class="form-group">
+                    <div class="controls registration-controls">
+                        <button id="submit-button" type="submit" class="btn btn-primary" onclick="handle_new_password_submit();">
+                            提交
+                        </button>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
     <div id="footer"></div>
 
 </div>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/dependencies.js"></script>
 <script src="js/passreset.js"></script>
@@ -60,5 +72,14 @@
         load_footer();
     })
 </script>
-</body>
-</html>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-20075001-9', 'zjuisa.org');
+  ga('send', 'pageview');
+
+</script>
+</body></html>

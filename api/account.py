@@ -1,3 +1,6 @@
+#
+# -*- coding: utf-8 -*-
+
 __author__ = "Collin Petty"
 __copyright__ = "Carnegie Mellon University"
 __license__ = "MIT"
@@ -7,8 +10,10 @@ __email__ = ["collin@cmu.edu", "peter@cmu.edu"]
 __status__ = "Production"
 
 from common import db
+from common import cache
 import common
 import group
+import utilities
 
 import bcrypt
 
@@ -32,40 +37,39 @@ def register_team(request):
     """
     email = request.form.get('email', '')
     teamname = request.form.get('team', '')
-    adviser = request.form.get('name', '')
     affiliation = request.form.get('aff', '')
     pwd = request.form.get('pass', '')
-    gname = request.form.get('group', '').lower().strip('')
-    joingroup = request.form.get('joingroup', '')
+    #gname = request.form.get('group', '').lower().strip('').encode('utf8')
+    #joingroup = request.form.get('joingroup', '').encode('utf8')
+    joingroup = 'false'
 
-    if '' in {email, teamname, adviser, affiliation, pwd}:
-        return {'status': 0, 'message': "Please fill in all of the required fields."}
+    if '' in {email, teamname, affiliation, pwd}:
+        return {'status': 0, 'message': "请填写必须的信息."}
+
+    email = email.encode('utf8').strip()
+    teamname = teamname.encode('utf8').strip()
+    affiliataion = affiliation.encode('utf8').strip()
+    pwd = pwd.encode('utf8')
+
     if db.teams.find({'teamname': teamname}).count() != 0:
-        return {'status': 0, 'message': "That team name is already registered."}
-    if joingroup != 'true' and gname != '':
-        if db.groups.find({'name': gname}).count() != 0:
-            return {'status': 2, 'message': "The group name you have entered exists, would you like to join it?"}
+        return {'status': 0, 'message': "用户名已经被使用."}
+    if db.teams.find({'email': email}).count() != 0:
+        return {'status': 0, 'message': "邮箱已经被使用."}
+
+    if len(teamname) > 20:
+        return {'status': 0, 'message': "用户名请不要太长.."}
+    if '<' in teamname or '>' in teamname:
+        return {'status': 0, 'message': "用户名不可包含尖括号. 请尝试使用≺⋖≤⩽≪等符号. 谢谢."}
 
     tid = common.token()
-    db.teams.insert({'email': str(email),
-                     'advisor': str(adviser),
-                     'teamname': str(teamname),
-                     'affiliation': str(affiliation),
-                     'pwhash': bcrypt.hashpw(str(pwd), bcrypt.gensalt(8)),
+    db.teams.insert({'email': email,
+                     'teamname': teamname,
+                     'affiliation': affiliation,
+                     'pwhash': bcrypt.hashpw(pwd, bcrypt.gensalt(8)),
+                     'email_verified': False,
                      'tid': tid})
-    if gname == '':
-        return {'status': 1, 'message': "Success! You have successfully registered."}
-
-    if joingroup == 'true':
-        if db.groups.find({'name': gname}).count() == 0:
-            group.create_group(tid, gname)
-        else:
-            db.groups.update({'name': gname}, {'$push': {'members': tid}})
-            return {'status': 1, 'message': 'Success! You have been added to the group!'}
-    else:
-        group.create_group(tid, gname)
-        return {'status': 1, 'message': "Success! You are registered and have created your group."}
-
+    utilities.prepare_verify_email(teamname, email)
+    return {'status': 1, 'message': "注册成功. 请访问邮箱查收验证邮件."}
 
 def update_password(tid, request):
     """Update account password.
@@ -77,27 +81,29 @@ def update_password(tid, request):
     pwd = request.form.get('pwd', '')
     conf = request.form.get('conf', '')
     if pwd == '':
-        return {'status': 0, 'message': "The new password cannot be emtpy."}
+        return {'status': 0, 'message': "新密码不能为空."}
     if pwd != conf:
-        return {'status': 0, 'message': "The passwords do not match."}
+        return {'status': 0, 'message': "两次密码并不相同."}
+    pwd = pwd.encode('utf8')
+    conf = conf.encode('utf8')
     db.teams.update({'tid': tid}, {'$set': {'pwhash': bcrypt.hashpw(pwd, bcrypt.gensalt(8))}})
-    return {'status': 1, 'message': "Success! Your password has been updated."}
+    return {'status': 1, 'message': "密码修改成功."}
 
 
-def get_ssh_account(tid):
-    """Get a webshell account.
-
-    Searches the sshaccts collection for a document that has the current team's tid, if one is found the creds are
-    returned. If no ssh account is associated with the user an account with no tid is selected and assigned to the
-    current team. The credentials are then returned. If no unused accounts are found an error email is sent to the
-    admin_emails list and an error is returned.
-    """
-    sshacct = db.sshaccts.find_one({'tid': tid})
-    if sshacct is not None:
-        return {'username': sshacct['user'], 'password': sshacct['password']}
-    sshacct = db.sshaccts.find_one({'$or': [{'tid': ''}, {'tid': {'$exists': False}}]})
-    if sshacct is not None:
-        db.sshaccts.update({'_id': sshacct['_id']}, {'$set': {'tid': tid}})
-        return {'username': sshacct['user'], 'password': sshacct['password']}
-    else:
-        common.log('No free SSH accounts were found in the database.')
+#def get_ssh_account(tid):
+#    """Get a webshell account.
+#
+#    Searches the sshaccts collection for a document that has the current team's tid, if one is found the creds are
+#    returned. If no ssh account is associated with the user an account with no tid is selected and assigned to the
+#    current team. The credentials are then returned. If no unused accounts are found an error email is sent to the
+#    admin_emails list and an error is returned.
+#    """
+#    sshacct = db.sshaccts.find_one({'tid': tid})
+#    if sshacct is not None:
+#        return {'username': sshacct['user'], 'password': sshacct['password']}
+#    sshacct = db.sshaccts.find_one({'$or': [{'tid': ''}, {'tid': {'$exists': False}}]})
+#    if sshacct is not None:
+#        db.sshaccts.update({'_id': sshacct['_id']}, {'$set': {'tid': tid}})
+#        return {'username': sshacct['user'], 'password': sshacct['password']}
+#    else:
+#        common.log('No free SSH accounts were found in the database.')

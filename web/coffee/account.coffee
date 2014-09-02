@@ -33,7 +33,8 @@ window.create_new_group = ->
     $.ambiance(message: data['message'], type: msg_class, timeout: 3)
 
 window.submit_new_password = ->
-  $.ajax(type: 'POST',
+  $.ajax(
+    type: 'POST',
     dataType: 'json',
     url: '/api/updatepass',
     data: {pwd: $('#new-pass').val(), conf: $('#conf-pass').val()})

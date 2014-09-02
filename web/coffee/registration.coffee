@@ -13,6 +13,7 @@ getRegData = ->
 $(document).ready ->
   $('#reg-email').focus()
   $('#register-button').click (event) ->
+    $.ambiance({message: "正在尝试发送验证邮件, 请稍候.", type: 'success', timeout: 10})
     event.preventDefault()
     hash = window.location.hash
     post = getRegData()

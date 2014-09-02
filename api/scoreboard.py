@@ -1,3 +1,6 @@
+#
+# -*- coding: utf-8 -*-
+
 __author__ = "Collin Petty"
 __copyright__ = "Carnegie Mellon University"
 __license__ = "MIT"
@@ -8,13 +11,20 @@ __status__ = "Production"
 
 
 from datetime import datetime
+import time
 import json
 import group
 from common import db
 from common import cache
 from common import esc
 
-end = datetime(2020, 5, 7, 3, 59, 59)
+import problem
+import utilities
+
+ctf_start = utilities.timestamp(datetime(2014, 4, 5, 0))
+ctf_end = utilities.timestamp(datetime(2014, 4, 6, 16))
+# # For debugging only
+# ctf_start = utilities.timestamp(datetime(2014, 04, 01, 00) - datetime.utcnow() + datetime.now())
 
 
 def get_group_scoreboards(tid):
@@ -33,13 +43,111 @@ def get_group_scoreboards(tid):
     return group_scoreboards
 
 
-def get_public_scoreboard():
-    """Gets the archived public scoreboard.
+def get_scoreboard(session):
+    """Get the public/zju scoreboard
+    """
+    if 'tid' in session and session['is_zju_user']:
+        teams = utilities.get_verified_teams_zju()
+        ret = get_teams_scoreboard_cached(teams, 'scoreboard_zju')
+    else:
+        teams = utilities.get_verified_teams_public()
+        ret = get_teams_scoreboard_cached(teams, 'scoreboard_public')
+
+    return ret
+
+
+def get_teams_scoreboard_cached(teams, cache_key):
+    """Gets the cached scoreboard of teams.
 
     Kind of a hack, tells the front end to look for a static page scoreboard rather than sending a 2000+ length
     array that the front end must parse.
     """
-    return {'path': '/staticscoreboard.html', 'group': 'Public'}
+    scoreboard = cache.get(cache_key)
+    if scoreboard is None:
+        scoreboard = dict()
+        problems = problem.load_problems()
+        problems = [{
+            'pid': p['pid'], 
+            'displayname': p['displayname']
+        }   for p in problems]
+        pids = [p['pid'] for p in problems]
+        team_scores = [{
+            "teamname": t['teamname'], 
+            "score": load_team_score(t['tid']),
+            "solved": [pids.index(p) 
+                for p in problem.get_solved_problems(t['tid'])]
+        }   for t in teams]
+        team_scores.sort(key=lambda x: (-x['score']['score'], x['score']['time_penalty']))
+        scoreboard['problems'] = problems
+        scoreboard['teamname'] = [ts['teamname'] for ts in team_scores]
+        scoreboard['score'] = [ts['score']['score'] for ts in team_scores]
+        scoreboard['solved'] = [ts['solved'] for ts in team_scores]
+        cache.set(cache_key, json.dumps(scoreboard), 60 * 60)
+    else:
+        scoreboard = json.loads(scoreboard)
+    return scoreboard
+
+
+#def get_scoreboard_public():
+#    """Gets the archived public scoreboard.
+#
+#    Kind of a hack, tells the front end to look for a static page scoreboard rather than sending a 2000+ length
+#    array that the front end must parse.
+#    """
+#    scoreboard = cache.get('scoreboard_public')
+#    if scoreboard is None:
+#        scoreboard = dict()
+#        problems = problem.load_problems()
+#        problems = [{'pid': p['pid'], 'displayname': p['displayname']} for p in problems]
+#        scoreboard['problems'] = problems
+#        verified_teams = utilities.get_verified_teams_public()
+#        team_scores = [{
+#            "teamname": t['teamname'], 
+#            "score": load_team_score(t['tid']),
+#            "solved": problem.get_solved_problems(t['tid'])
+#        }   for t in verified_teams]
+#        team_scores.sort(key=lambda x: (-x['score']['score'], x['score']['time_penalty']))
+#        team_scores = [{
+#            'teamname': t['teamname'], 
+#            'score': t['score']['score'],
+#            'solved': t['solved']
+#        }   for t in team_scores]
+#        scoreboard['teamscores'] = team_scores
+#        cache.set('scoreboard_public', json.dumps(scoreboard), 60 * 60)
+#    else:
+#        scoreboard = json.loads(scoreboard)
+#    return scoreboard
+#
+#
+#def get_scoreboard_zju():
+#    """Gets the archived public scoreboard.
+#
+#    Kind of a hack, tells the front end to look for a static page scoreboard rather than sending a 2000+ length
+#    array that the front end must parse.
+#    """
+#    scoreboard = cache.get('scoreboard_zju')
+#    if scoreboard is None:
+#        scoreboard = dict()
+#        problems = problem.load_problems()
+#        problems = [{'pid': p['pid'], 'displayname': p['displayname']} for p in problems]
+#        scoreboard['problems'] = problems
+#        verified_teams = utilities.get_verified_teams_public()
+#        team_scores = [{
+#            "teamname": t['teamname'], 
+#            "score": load_team_score(t['tid']),
+#            "solved": problem.get_solved_problems(t['tid'])
+#        }   for t in verified_teams]
+#        team_scores.sort(key=lambda x: (-x['score']['score'], x['score']['time_penalty']))
+#        team_scores = [{
+#            'teamname': t['teamname'], 
+#            'score': t['score']['score'],
+#            'solved': t['solved']
+#        }   for t in team_scores]
+#        scoreboard['teamscores'] = team_scores
+#        cache.set('scoreboard_zju', json.dumps(scoreboard), 60 * 60)
+#    else:
+#        scoreboard = json.loads(scoreboard)
+#    return scoreboard
 
 
 def load_team_score(tid):
@@ -49,12 +157,30 @@ def load_team_score(tid):
     basescores if they exist. Cache the result.
     """
     score = cache.get('teamscore_' + tid)
-    if score is not None:
-        return score
-    s = {d['pid'] for d in list(db.submissions.find({"tid": tid, "correct": True}))}  # ,#"timestamp": {"$lt": end}}))}
-    score = sum([d['basescore'] if 'basescore' in d else 0 for d in list(db.problems.find({
-        'pid': {"$in": list(s)}}))])
-    cache.set('teamscore_' + tid, score, 60 * 60)
+    if score is None:
+        problems = problem.load_problems()
+        pscore = {p['pid']: p['basescore'] for p in problems}
+        solved = problem.get_solved_problems(tid)
+        score = dict()
+        score['score'] = sum(pscore[pid] for pid in solved)
+        # TODO: calculate time penalty
+        submission = list(db.submissions.find(
+            {
+                "tid": tid, 
+                "correct": True,
+                "pid": {"$ne": "wait_re"},
+                "timestamp": {"$gt": ctf_start},
+                "timestamp": {"$lt": ctf_end}
+            }, {
+                "_id": 0, 
+                "pid": 1, 
+                "timestamp": 1
+            }))
+        time_penalty = max([0] + [s['timestamp'] for s in submission])
+        score['time_penalty'] = time_penalty
+        cache.set('teamscore_' + tid, json.dumps(score), 60 * 60)
+    else:
+        score = json.loads(score)
     return score
 
 
@@ -94,4 +220,4 @@ def load_group_scoreboard(group):
           'affiliation': esc(t['affiliation']),
           'score': load_team_score(t['tid'])}
          for t in teams], key=lambda k: k['score'], reverse=True) if x['score'] > 0]
-    cache.set('groupscoreboard_' + str(group['name']), json.dumps({'group': group['name'], 'scores': top_scores}), 60 * 30)
+    cache.set('groupscoreboard_' + group['name'], json.dumps({'group': group['name'], 'scores': top_scores}), 60 * 30)

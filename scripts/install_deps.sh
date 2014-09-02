@@ -24,6 +24,23 @@ sudo pip install flask-pymongo
 sudo pip install py-bcrypt
 sudo pip install pylibmc
 
+# install node.js and coffeescript on old Debian
+cwd=`pwd`
+cd /tmp
+# Install needed packages
+sudo apt-get install git-core curl build-essential openssl libssl-dev
+# Install node.js
+git clone https://github.com/joyent/node.git && cd node
+./configure
+make -j 9
+sudo make install
+cd
+# Install npm
+curl http://npmjs.org/install.sh | sudo sh
+#Install CoffeeScript
+sudo  npm install -g coffee-script
+cd $cwd
+
 # Start nginx
 
 sudo mkdir --parents /srv/http/main-site
